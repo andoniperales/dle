@@ -11,7 +11,7 @@ Diccionario de la Lengua Española (DLE) by Real Academia Española (RAE), avail
 
 Use ```-f``` for full-ish results (everything but phrases). Using it without that option outputs just the first sense for the term.
 
-## Example
+## Examples
 
 ```
 > dle pinnípedo
