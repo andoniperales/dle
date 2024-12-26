@@ -1,5 +1,39 @@
 #!/bin/bash
-curl "https://dle.rae.es/{$1}" -H "User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36" -s |
-	if ! grep -oP '(?<="description": ")(1.*?)(?=")' 
-		then echo "term not found"
-	fi
+
+HEADER="User-Agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36"
+URL="https://dle.rae.es"
+
+check_term () {
+    desc=$(echo $def_raw | grep -oP '(?<="description": ")(1.*?)(?=")')
+    if [[ -z $desc ]]
+    then
+        echo "term not found"
+        exit
+    fi
+}
+
+if [[ $1 == "-f" ]]
+then
+    def_raw=$(curl "$URL/{$2}" -H "$HEADER" -s)
+
+    check_term
+
+    etymology=$(echo $def_raw |
+                grep -oP '<div class="n2 c-text-intro">.*?(?=</div>)' |
+                sed s/"<[^>]*>"//g |
+                perl -Mopen=locale -MHTML::Entities -pe '$_ =decode_entities($_)')
+    def=$(echo $def_raw |
+          grep -oP '<ol class="c-definitions">.*?</ol>' |
+          head -1 |
+          sed -r 's/<sup>[0-9]+<\/sup>//g' |
+          sed s/"<[^>]*>"//g |
+          perl -Mopen=locale -MHTML::Entities -pe '$_ =decode_entities($_)' |
+          sed -r 's/(\.|\:)(\A-Za-z)/\1 \2/g')
+    echo $etymology
+    echo $def |
+    grep -oP '([0-9]+\. .*?(?=[0-9]+\. )|[0-9]+\. .*?(?=$))'
+else
+    def_raw=$(curl "$URL/{$1}" -H "$HEADER" -s)
+
+    check_term
+fi
