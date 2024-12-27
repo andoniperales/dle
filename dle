@@ -5,10 +5,15 @@ URL="https://dle.rae.es"
 
 check_term () {
     desc=$(echo $def_raw | grep -oP '(?<="description": ")(1.*?)(?=")')
+
     if [[ -z $desc ]]
     then
-        echo "term not found"
-        exit
+        desc=$(echo $def_raw | grep -oP '(?<=española: )1.*?(?=")' | head -1)
+        if [[ -z $desc ]]
+        then
+            echo "term not found"
+            exit
+        fi
     fi
 }
 
@@ -28,7 +33,7 @@ then
           sed -r 's/<sup>[0-9]+<\/sup>//g' |
           sed s/"<[^>]*>"//g |
           perl -Mopen=locale -MHTML::Entities -pe '$_ =decode_entities($_)' |
-          sed -r 's/(\.|\:)(\A-Za-z)/\1 \2/g')
+          sed -r 's/(\.|\:)([A-Za-z])/\1 \2/g')
     echo $etymology
     echo $def |
     grep -oP '([0-9]+\. .*?(?=[0-9]+\. )|[0-9]+\. .*?(?=$))'
@@ -36,4 +41,6 @@ else
     def_raw=$(curl "$URL/{$1}" -H "$HEADER" -s)
 
     check_term
+
+    echo $desc
 fi
