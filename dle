@@ -34,9 +34,17 @@ then
           sed s/"<[^>]*>"//g |
           perl -Mopen=locale -MHTML::Entities -pe '$_ =decode_entities($_)' |
           sed -r 's/(\.|\:)([A-Za-z])/\1 \2/g')
-    echo $etymology
+
+    if [[ -z $etymology ]]
+    then
+        echo "(No se proporciona etimología)."
+    else
+        echo $etymology
+    fi
+
     echo $def |
     grep -oP '([0-9]+\. .*?(?=[0-9]+\. )|[0-9]+\. .*?(?=$))'
+
 else
     def_raw=$(curl "$URL/{$1}" -H "$HEADER" -s)
 
