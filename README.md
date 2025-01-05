@@ -9,7 +9,7 @@ Diccionario de la Lengua Española (DLE) by Real Academia Española (RAE), avail
 
 ```dle [-f] [term]```
 
-Use ```-f``` for full-ish results (everything but phrases). Using it without that option outputs just the first sense or senses for the term.
+Use ```-f``` for full-ish results (everything but phrases). Using it without that option outputs just the first sense or senses for the term, without any synonyms or antonyms.
 
 ## Examples
 
